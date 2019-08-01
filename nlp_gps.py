@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 
-from Building import Building
 import Constants
+import MapViewer
 from Point import Point
+from Village import Village
 
 class TwoDimRep():
     def __init__(self, rawData):
@@ -84,7 +85,10 @@ def read_in_map_data(buildingIds):
 
 if __name__ == "__main__":
     buildingTable = read_in_table_data()
-    twoDimRep, buildingPixelRep = read_in_map_data(buildingTable.keys())
+    columbia = Village(Constants.MAP_NAME, buildingTable)
+    # MapViewer.displayMapWithVillage(columbia)
+    MapViewer.displayMapWithVillageSomeColored(columbia, set([9, 161, 255]))
+    # twoDimRep, buildingPixelRep = read_in_map_data(buildingTable.keys())
     # twoDimRep.displayTwoDim()
     #bySizeMap = buildingPixelRep.orderBySizeMap()
     #twoDimRep.displayWithHighlightedBuildings(bySizeMap)

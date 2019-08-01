@@ -4,14 +4,20 @@ import numpy as np
 from Building import Building
 import Constants
 
-def displayMapWithBuildings(buildingList):
+def displayMapWithVillageSomeColored(village, coloredBuildingIdsSet):
     mapArr = __createEmptyMap__()
-    for building in buildingList:
+    for building in village.getBuildings():
+        __replacePoints__(mapArr, building.getPoints(), Constants.RED if building.getId() in coloredBuildingIdsSet else Constants.WHITE)
+    __display__(mapArr)
+
+def displayMapWithVillage(village):
+    mapArr = __createEmptyMap__()
+    for building in village.getBuildings():
         __replacePoints__(mapArr, building.getPoints(), Constants.WHITE)
     __display__(mapArr)
 
 def __createEmptyMap__():
-    return np.zeros((Constants.HEIGHT, Constants.WIDTH))
+    return np.zeros((Constants.HEIGHT, Constants.WIDTH, 3))
 
 def __replacePoints__(mapArr, points, val):
     for point in points:

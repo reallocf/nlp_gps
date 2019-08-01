@@ -2,9 +2,19 @@ import Constants
 from Point import Point
 
 class Building():
-    def __init__(self, points):
+    def __init__(self, buildingId, points):
+        self.id = buildingId
         self.points = points
         self.boundingBoxTopLeft, self.boundingBoxBottomRight, self.boundingBoxPoints = self.__getBoundingBox__(points)
+
+    def getId(self):
+        return self.id
+
+    def getSize(self):
+        return len(self.points)
+
+    def getPoints(self):
+        return self.points
 
     def __getBoundingBox__(self, points):
         top = Constants.HEIGHT + 1
@@ -30,9 +40,3 @@ class Building():
             boundingBoxPoints.append(Point(x, top))
             boundingBoxPoints.append(Point(x, bottom))
         return (top, left), (bottom, right), boundingBoxPoints
-    
-    def getSize(self):
-        return len(self.points)
-
-    def getPoints(self):
-        return self.points
