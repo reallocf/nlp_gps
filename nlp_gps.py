@@ -11,14 +11,18 @@ def read_in_table_data():
     with open(Constants.TABLE_NAME) as f:
         return {int(splitLine[0]) : splitLine[1] for splitLine in [line.split() for line in f.readlines()]}
 
-def printBuildingDescriptionsOnlyShape(village):
+def printBuildingDescriptionsShape(village):
     buildingDescriptions = village.describeBuildingsByShape()
+    print("\n".join([str(description) for description in buildingDescriptions]))
+
+def printBuildingDescriptionsShapeAndLocation(village):
+    buildingDescriptions = village.describeBuildingsByShapeAndLocation()
     print("\n".join([str(description) for description in buildingDescriptions]))
 
 if __name__ == "__main__":
     buildingTable = read_in_table_data()
     columbia = Village(Constants.MAP_NAME, buildingTable)
-    printBuildingDescriptionsOnlyShape(columbia)
+    printBuildingDescriptionsShapeAndLocation(columbia)
     # MapViewer.displayMapWithVillage(
     #     columbia,
     #     highlightByCondition=[

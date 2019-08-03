@@ -2,6 +2,7 @@ import math
 
 import Constants
 from Description import Description
+from Location import Location
 from Point import Point
 import Utils
 
@@ -23,7 +24,8 @@ class Building():
         self.isSkinny = self.__calcIsSkinny__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
         self.isSmall, self.isMedium, self.isLarge = self.__calcSize__(self.area)        
         assert(Utils.exactlyOneOf([self.isSmall, self.isMedium, self.isLarge]))
-        self.buildingShape = self.__describeBuildingShape__()
+        self.shape = self.__describeShape__()
+        self.location = self.__calcLocation__(self.center)
 
     def getId(self):
         return self.id
@@ -40,13 +42,22 @@ class Building():
     def getCenterForDisplay(self):
         return self.center.forDisplay()
 
-    def describeBuildingShape(self):
+    def describeBuildingWithShape(self):
         return [self.name,
                 self.center,
                 self.area,
                 self.boundingBoxTopLeft,
                 self.boundingBoxBottomRight,
-                self.buildingShape]
+                self.shape]
+
+    def describeBuildingWithShapeAndLocation(self):
+        return [self.name,
+                self.center,
+                self.area,
+                self.boundingBoxTopLeft,
+                self.boundingBoxBottomRight,
+                self.shape,
+                self.location]
 
     '''
     Uniquely describes each building on Columbia map based solely on shape described in natural language.
@@ -99,7 +110,7 @@ class Building():
         longer top-bottom than left-right
         same left-right and top-bottom
     '''
-    def __describeBuildingShape__(self):
+    def __describeShape__(self):
         description = Description()
         if self.isRectangular:
             description.isRectangular()
@@ -249,6 +260,8 @@ class Building():
         else:
             return False, False, True
 
+    def __calcLocation__(self, center):
+        return Location(center)
 
 def isRectangular(building):
     return building.isRectangular

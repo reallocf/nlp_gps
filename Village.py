@@ -14,7 +14,13 @@ class Village():
     def describeBuildingsByShape(self):
         buildingDescriptions = []
         for building in self.buildings:
-            buildingDescriptions.append(building.describeBuildingShape())
+            buildingDescriptions.append(building.describeBuildingWithShape())
+        return buildingDescriptions
+
+    def describeBuildingsByShapeAndLocation(self):
+        buildingDescriptions = []
+        for building in self.buildings:
+            buildingDescriptions.append(building.describeBuildingWithShapeAndLocation())
         return buildingDescriptions
 
     def __pgmToRawData__(self, fileName):
