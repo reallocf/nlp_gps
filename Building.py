@@ -1,21 +1,29 @@
 import math
 
 import Constants
+from Description import Description
 from Point import Point
+import Utils
 
 class Building():
-    def __init__(self, buildingId, points):
+    def __init__(self, name, buildingId, points):
+        self.name = name
         self.id = buildingId
         self.points = set(points)
+        self.area = len(self.points)
         self.boundingBoxTopLeft, self.boundingBoxBottomRight, self.boundingBoxPoints = self.__calcBoundingBox__(points)
         self.center = self.__calcCenter__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
-        self.isRectangular = self.__calcIsRectangular__(self.points, self.boundingBoxPoints)
-        self.isLeftRightSymmetric = self.__calcIsLeftRightSymmetric__(self.points, self.center)
-        self.isTopBottomSymmetric = self.__calcIsTopBottomSymmetric__(self.points, self.center)
+        self.isRectangular, self.isDoubleSymmetricNotRectangular, self.isOnlyLeftRightSymmetric, self.isOnlyTopBottomSymmetric, self.isNotSymmetric = self.__calcSimilarity__(self.points, self.boundingBoxPoints, self.center)
+        assert(Utils.exactlyOneOf([self.isRectangular, self.isDoubleSymmetricNotRectangular, self.isOnlyLeftRightSymmetric, self.isOnlyTopBottomSymmetric, self.isNotSymmetric]))
         self.isLongerLeftRight = self.__calcIsLongerLeftRight__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
         self.isLongerTopBottom = self.__calcIsLongerTopBottom__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
         self.isLengthSame = self.__calcIsLengthSame__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
+        assert(Utils.exactlyOneOf([self.isLongerLeftRight, self.isLongerTopBottom, self.isLengthSame]))
         self.numberOfTouchingBoundingBoxCorners = self.__calcNumberOfTouchingBoundingBoxCorners__(self.boundingBoxTopLeft, self.boundingBoxBottomRight, self.points)
+        self.isSkinny = self.__calcIsSkinny__(self.boundingBoxTopLeft, self.boundingBoxBottomRight)
+        self.isSmall, self.isMedium, self.isLarge = self.__calcSize__(self.area)        
+        assert(Utils.exactlyOneOf([self.isSmall, self.isMedium, self.isLarge]))
+        self.buildingShape = self.__describeBuildingShape__()
 
     def getId(self):
         return self.id
@@ -31,6 +39,145 @@ class Building():
 
     def getCenterForDisplay(self):
         return self.center.forDisplay()
+
+    def describeBuildingShape(self):
+        return [self.name,
+                self.center,
+                self.area,
+                self.boundingBoxTopLeft,
+                self.boundingBoxBottomRight,
+                self.buildingShape]
+
+    '''
+    Uniquely describes each building on Columbia map based solely on shape described in natural language.
+    Not all descriptors are needed to uniquely describe each building, follows this tree structure to determine descriptors.
+
+    rectangular
+        longer left-right than top-bottom
+            small
+            medium
+            large
+        longer top-bottom than left-right
+            is skinny
+                small
+                medium
+                large
+            is not skinny
+                small
+                medium
+                large
+        same left-right and top-bottom
+    double symmetric but not rectangular
+        longer left-right than top-bottom
+            touches on 4 bounding box corners
+            touches on 3 bounding box corners
+            touches on 2 bounding box corners
+            touches on 1 bounding box corner
+            touches on no bounding box corners
+                small
+                medium
+                large
+        longer top-bottom than left-right
+        same left-right and top-bottom
+    only left-right symmetric
+        longer left-right than top-bottom
+        longer top-bottom than left-right
+        same left-right and top-bottom
+    only top-bottom symmetric
+        longer left-right than top-bottom
+        longer top-bottom than left-right
+        same left-right and top-bottom
+    not symmetric
+        longer left-right than top-bottom
+            touches on 4 bounding box corners
+            touches on 3 bounding box corners
+            touches on 2 bounding box corners
+            touches on 1 bounding box corner
+                is skinny
+                is not skinny
+            touches on no bounding box corners
+        longer top-bottom than left-right
+        same left-right and top-bottom
+    '''
+    def __describeBuildingShape__(self):
+        description = Description()
+        if self.isRectangular:
+            description.isRectangular()
+            if self.isLongerLeftRight:
+                description.isLongerLeftRight()
+                if self.isSmall:
+                    description.isSmall()
+                elif self.isMedium:
+                    description.isMedium()
+                else:
+                    description.isLarge()
+            elif self.isLongerTopBottom:
+                description.isLongerTopBottom()
+                if self.isSkinny:
+                    description.isSkinny()
+                    if self.isSmall:
+                        description.isSmall()
+                    elif self.isMedium:
+                        description.isMedium()
+                    else:
+                        description.isLarge()
+                else:
+                    description.isNotSkinny()
+                    if self.isSmall:
+                        description.isSmall()
+                    elif self.isMedium:
+                        description.isMedium()
+                    else:
+                        description.isLarge()
+            else:
+                description.isLengthSameLeftRightTopBottom()
+        elif self.isDoubleSymmetricNotRectangular:
+            description.isDoubleSymmetricNotRectangular()
+            if self.isLongerLeftRight:
+                description.isLongerLeftRight()
+                description.touchesOnXBoundingBoxCorners(self.numberOfTouchingBoundingBoxCorners)
+                if (self.numberOfTouchingBoundingBoxCorners == 0):
+                    if self.isSkinny:
+                        description.isSkinny()
+                    else:
+                        description.isNotSkinny()
+            elif self.isLongerTopBottom:
+                description.isLongerTopBottom()
+            else:
+                description.isLengthSameLeftRightTopBottom()
+        elif self.isOnlyLeftRightSymmetric:
+            description.isOnlyLeftRightSymmetric()
+            if self.isLongerLeftRight:
+                description.isLongerLeftRight()
+            elif self.isLongerTopBottom:
+                description.isLongerTopBottom()
+            else:
+                description.isLengthSameLeftRightTopBottom()
+        elif self.isOnlyTopBottomSymmetric:
+            description.isOnlyTopBottomSymmetric()
+            if self.isLongerLeftRight:
+                description.isLongerLeftRight()
+            elif self.isLongerTopBottom:
+                description.isLongerTopBottom()
+            else:
+                description.isLengthSameLeftRightTopBottom()
+        else:
+            description.isNotSymmetric()
+            if self.isLongerLeftRight:
+                description.isLongerLeftRight()
+                description.touchesOnXBoundingBoxCorners(self.numberOfTouchingBoundingBoxCorners)
+                if (self.numberOfTouchingBoundingBoxCorners == 1):
+                    if self.isSmall:
+                        description.isSmall()
+                    elif self.isMedium:
+                        description.isMedium()
+                    else:
+                        description.isLarge()
+            elif self.isLongerTopBottom:
+                description.isLongerTopBottom()
+            else:
+                description.isLengthSameLeftRightTopBottom()        
+        return description
 
     def __calcBoundingBox__(self, points):
         top = Constants.HEIGHT + 1
@@ -60,6 +207,16 @@ class Building():
     def __calcCenter__(self, topLeft, bottomRight):
         return Point((topLeft.x + bottomRight.x) / 2, (topLeft.y + bottomRight.y) / 2)
 
+    def __calcSimilarity__(self, points, boundingBoxPoints, center):
+        isRectangular = self.__calcIsRectangular__(points, boundingBoxPoints)
+        isLeftRightSymmetric = self.__calcIsLeftRightSymmetric__(points, center)
+        isTopBottomSymmetric = self.__calcIsTopBottomSymmetric__(points, center)
+        return (isRectangular,
+            not isRectangular and isLeftRightSymmetric and isTopBottomSymmetric,
+            not isRectangular and isLeftRightSymmetric and not isTopBottomSymmetric,
+            not isRectangular and not isLeftRightSymmetric and isTopBottomSymmetric,
+            not isRectangular and not isLeftRightSymmetric and not isTopBottomSymmetric)
+
     def __calcIsRectangular__(self, points, boundingBoxPoints):
         return all(boundingBoxPoint in points for boundingBoxPoint in boundingBoxPoints)
 
@@ -73,7 +230,7 @@ class Building():
         return (bottomRight.x - topLeft.x) - (bottomRight.y - topLeft.y) > Constants.RELATIVE_LENGTH_MAGIC_NUM
 
     def __calcIsLongerTopBottom__(self, topLeft, bottomRight):
-        return (bottomRight.y - topLeft.y) - (bottomRight.x - topLeft.x) > -Constants.RELATIVE_LENGTH_MAGIC_NUM
+        return (bottomRight.y - topLeft.y) - (bottomRight.x - topLeft.x) > Constants.RELATIVE_LENGTH_MAGIC_NUM
 
     def __calcIsLengthSame__(self, topLeft, bottomRight):
         return -Constants.RELATIVE_LENGTH_MAGIC_NUM <= (bottomRight.x - topLeft.x) - (bottomRight.y - topLeft.y) <= Constants.RELATIVE_LENGTH_MAGIC_NUM
@@ -81,29 +238,32 @@ class Building():
     def __calcNumberOfTouchingBoundingBoxCorners__(self, topLeft, bottomRight, points):
         return sum([1 if topLeft in points else 0, 1 if bottomRight in points else 0, 1 if Point(topLeft.x, bottomRight.y) in points else 0, 1 if Point(bottomRight.x, topLeft.y) in points else 0])
 
+    def __calcIsSkinny__(self, topLeft, bottomRight):
+        return abs((bottomRight.x - topLeft.x) - (bottomRight.y - topLeft.y)) > Constants.SKINNINESS_MAGIC_NUM
+
+    def __calcSize__(self, numberOfPoints):
+        if numberOfPoints <= Constants.SMALL_MED_DIVIDE_MAGIC_NUM:
+            return True, False, False
+        elif numberOfPoints <= Constants.MED_LARGE_DIVIDE_MAGIC_NUM:
+            return False, True, False
+        else:
+            return False, False, True
+
+
 def isRectangular(building):
     return building.isRectangular
 
-def isLeftRightSymmetric(building):
-    return building.isLeftRightSymmetric
-
-def isTopBottomSymmetric(building):
-    return building.isTopBottomSymmetric
-
-def isDoubleSymmetric(building):
-    return building.isLeftRightSymmetric and building.isTopBottomSymmetric
-
 def isDoubleSymmetricNotRectangular(building):
-    return not building.isRectangular and building.isLeftRightSymmetric and building.isTopBottomSymmetric
+    return building.isDoubleSymmetricNotRectangular
 
 def isOnlyLeftRightSymmetric(building):
-    return not building.isRectangular and building.isLeftRightSymmetric and not building.isTopBottomSymmetric
+    return building.isLeftRightSymmetric
 
 def isOnlyTopBottomSymmetric(building):
-    return not building.isRectangular and not building.isLeftRightSymmetric and building.isTopBottomSymmetric
+    return building.isTopBottomSymmetric
 
 def isNotSymmetric(building):
-    return not building.isRectangular and not building.isLeftRightSymmetric and not building.isTopBottomSymmetric
+    return building.isNotSymmetric
 
 def isLongerLeftRight(building):
     return building.isLongerLeftRight
@@ -128,3 +288,18 @@ def threeTouchingBoundingBoxPoints(building):
 
 def fourTouchingBoundingBoxPoints(building):
     return building.numberOfTouchingBoundingBoxCorners == 4
+
+def isSkinny(building):
+    return building.isSkinny
+
+def isNotSkinny(building):
+    return not building.isSkinny
+
+def isSmall(building):
+    return building.isSmall
+
+def isMedium(building):
+    return building.isMedium
+
+def isLarge(building):
+    return building.isLarge

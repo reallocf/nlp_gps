@@ -3,13 +3,19 @@ import Constants
 from Point import Point
 
 class Village():
-    def __init__(self, fileName, buildingIds):
+    def __init__(self, fileName, buildingNameMap):
         self.rawData = self.__pgmToRawData__(fileName)
-        self.buildings = self.__constructBuildings__(buildingIds, self.rawData)
+        self.buildings = self.__constructBuildings__(buildingNameMap, self.rawData)
         self.idToBuildingMap = self.__idToBuildingMap__(self.buildings)
 
     def getBuildings(self):
         return self.buildings
+
+    def describeBuildingsByShape(self):
+        buildingDescriptions = []
+        for building in self.buildings:
+            buildingDescriptions.append(building.describeBuildingShape())
+        return buildingDescriptions
 
     def __pgmToRawData__(self, fileName):
         with open(Constants.MAP_NAME, "rb") as f:
@@ -18,15 +24,15 @@ class Village():
             assert(len(rawData) == Constants.WIDTH * Constants.HEIGHT)
             return rawData
 
-    def __constructBuildings__(self, buildingIds, rawData):
-        idToBuildingPixelMap = {k : [] for k in buildingIds}
+    def __constructBuildings__(self, buildingNameMap, rawData):
+        idToBuildingPixelMap = {k : [] for k in buildingNameMap}
         for y in range(Constants.HEIGHT):
             for x in range(Constants.WIDTH):
                 buildingId = rawData[y * Constants.WIDTH + x]
-                assert(buildingId == 0 or buildingId in buildingIds)
+                assert(buildingId == 0 or buildingId in buildingNameMap)
                 if (buildingId != 0):
                     idToBuildingPixelMap[buildingId].append(Point(x, y))
-        return [Building(buildingId, pixels) for buildingId, pixels in idToBuildingPixelMap.items()]
+        return [Building(buildingNameMap[buildingId], buildingId, pixels) for buildingId, pixels in idToBuildingPixelMap.items()]
 
     def __idToBuildingMap__(self, buildings):
         return {building.getId(): building for building in buildings}
