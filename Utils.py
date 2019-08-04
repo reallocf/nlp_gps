@@ -9,3 +9,13 @@ def exactlyOneOf(lst):
 
 def uniquenessTest(listOfDescription):
     assert(len(set(listOfDescription)) == len(listOfDescription))
+
+def invertMap(regMap):
+    invMap = {}
+    for key in regMap.keys():
+        keySet = set()
+        for otherKey, val in regMap.items():
+            if key in val:
+                keySet.add(otherKey)
+        invMap[key] = keySet
+    return invMap

@@ -27,3 +27,9 @@ SKINNINESS_MAGIC_NUM = 40
 # symmetry/orientation/number of bounding box points touching
 SMALL_MED_DIVIDE_MAGIC_NUM = 700
 MED_LARGE_DIVIDE_MAGIC_NUM = 2000
+
+# controls the angle to which one building is north/south/east/west of another
+DIRECTION_ANGLE_MAGIC_NUM = 0.25
+
+# scaling factor by which to multiply the bounding box to identify what is near
+NEARNESS_MAGIC_NUM = 1.5

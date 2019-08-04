@@ -1,6 +1,7 @@
 from Building import Building
 import Constants
 from Point import Point
+import Utils
 
 class Village():
     def __init__(self, fileName, buildingNameMap):
@@ -22,6 +23,22 @@ class Village():
         for building in self.buildings:
             buildingDescriptions.append(building.describeBuildingWithShapeAndLocation())
         return buildingDescriptions
+
+    def describeBuildingsByRelativePositioning(self, relativePositionCheck):
+        relativeBuildingMatrix = {}
+        for building in self.buildings:
+            buildingsRelationsSet = set()
+            for otherBuilding in self.buildings:
+                if relativePositionCheck(building, otherBuilding):
+                    shouldAdd = True
+                    for anotherOtherBuilding in self.buildings:
+                        if relativePositionCheck(building, anotherOtherBuilding) and relativePositionCheck(anotherOtherBuilding, otherBuilding):
+                            shouldAdd = False
+                            break
+                    if shouldAdd:
+                        buildingsRelationsSet.add(otherBuilding)
+            relativeBuildingMatrix[building] = buildingsRelationsSet
+        return relativeBuildingMatrix
 
     def __pgmToRawData__(self, fileName):
         with open(Constants.MAP_NAME, "rb") as f:

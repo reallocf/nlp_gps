@@ -49,3 +49,18 @@ class Description:
 
     def isLarge(self):
         self.descriptors.append("large")
+
+    def northOf(self, elems):
+        self.descriptors.append(f'north of {self.__of__(elems)}')
+
+    def southOf(self, elems):
+        self.descriptors.append(f'south of {self.__of__(elems)}')
+
+    def eastOf(self, elems):
+        self.descriptors.append(f'east of {self.__of__(elems)}')
+
+    def westOf(self, elems):
+        self.descriptors.append(f'west of {self.__of__(elems)}')
+
+    def __of__(self, elems):
+        return " and ".join(str(elem) for elem in elems)

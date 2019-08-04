@@ -27,6 +27,9 @@ class Building():
         self.shape = self.__describeShape__()
         self.location = self.__calcLocation__(self.center)
 
+    def __str__(self):
+        return self.name
+
     def getId(self):
         return self.id
 
@@ -58,6 +61,36 @@ class Building():
                 self.boundingBoxBottomRight,
                 self.shape,
                 self.location]
+
+    '''
+    Returns true if any point in the this building is in a rectangular area around the other building
+    with the size of the rectangular area relative to the size of the other building like so:
+    ----box around bounding box side indicating nearness------------------
+            ^                           this is near based off the math  |
+            |                                          X                 |
+    dist based on top-bottom bounding box size                           |
+            |                                                            |
+    -bounding box side--                                                 |
+                       |                                                 |
+                       |                                                 |
+                       s                                                 |
+                       i                                                 |
+                       d ---dist based on left-right bounding box size-->|
+                       e                                                 |
+                       |                                                 |
+                       |                                                 |
+    '''
+    def isNear(self, otherBuilding):
+        if self == otherBuilding:
+            return False
+        nearnessBoxTopLeft = Point(otherBuilding.center.x - ((otherBuilding.center.x - otherBuilding.boundingBoxTopLeft.x) * Constants.NEARNESS_MAGIC_NUM),
+                                   otherBuilding.center.y - ((otherBuilding.center.y - otherBuilding.boundingBoxTopLeft.y) * Constants.NEARNESS_MAGIC_NUM))
+        nearnessBoxBottomRight = Point(otherBuilding.center.x + ((otherBuilding.boundingBoxBottomRight.x - otherBuilding.center.x) * Constants.NEARNESS_MAGIC_NUM),
+                                       otherBuilding.center.y + ((otherBuilding.boundingBoxBottomRight.y - otherBuilding.center.y) * Constants.NEARNESS_MAGIC_NUM))
+        for point in self.points:
+            if (nearnessBoxTopLeft.x < point.x < nearnessBoxBottomRight.x) and (nearnessBoxTopLeft.y < point.y < nearnessBoxBottomRight.y):
+                return True
+        return False
 
     '''
     Uniquely describes each building on Columbia map based solely on shape described in natural language.
@@ -270,10 +303,10 @@ def isDoubleSymmetricNotRectangular(building):
     return building.isDoubleSymmetricNotRectangular
 
 def isOnlyLeftRightSymmetric(building):
-    return building.isLeftRightSymmetric
+    return building.isOnlyLeftRightSymmetric
 
 def isOnlyTopBottomSymmetric(building):
-    return building.isTopBottomSymmetric
+    return building.isOnlyTopBottomSymmetric
 
 def isNotSymmetric(building):
     return building.isNotSymmetric
@@ -316,3 +349,16 @@ def isMedium(building):
 
 def isLarge(building):
     return building.isLarge
+
+def isNorthOf(building, otherBuilding):
+    return otherBuilding.location.isItNorth(building.location)
+
+def isSouthOf(building, otherBuilding):
+    return otherBuilding.location.isItSouth(building.location)
+
+def isEastOf(building, otherBuilding):
+    return otherBuilding.location.isItEast(building.location)
+
+def isWestOf(building, otherBuilding):
+    return otherBuilding.location.isItWest(building.location)
+
