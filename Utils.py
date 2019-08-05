@@ -7,9 +7,6 @@ def exactlyOneOf(lst):
             res = elem
     return res
 
-def uniquenessTest(listOfDescription):
-    assert(len(set(listOfDescription)) == len(listOfDescription))
-
 def invertMap(regMap):
     invMap = {}
     for key in regMap.keys():
