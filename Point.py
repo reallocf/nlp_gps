@@ -26,3 +26,6 @@ class Point():
             for y in range(-1, 2):
                 ret.append(self.relativePoint(x, y))
         return ret
+
+    def adjacentPoints(self):
+        return [self.relativePoint(1, 0), self.relativePoint(-1, 0), self.relativePoint(0, 1), self.relativePoint(0, -1)]

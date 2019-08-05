@@ -237,8 +237,8 @@ class Building():
                 left = point.x
             if point.x > right:
                 right = point.x
-        assert(top < bottom)
-        assert(left < right)
+        assert(top <= bottom)
+        assert(left <= right)
         boundingBoxPoints = []
         for y in range(top, bottom):
             boundingBoxPoints.append(Point(left, y))
@@ -351,14 +351,21 @@ def isLarge(building):
     return building.isLarge
 
 def isNorthOf(building, otherBuilding):
-    return otherBuilding.location.isItNorth(building.location)
+    return otherBuilding.location.isItNorth(building.location) and not isIn(building, otherBuilding)
 
 def isSouthOf(building, otherBuilding):
-    return otherBuilding.location.isItSouth(building.location)
+    return otherBuilding.location.isItSouth(building.location) and not isIn(building, otherBuilding)
 
 def isEastOf(building, otherBuilding):
-    return otherBuilding.location.isItEast(building.location)
+    return otherBuilding.location.isItEast(building.location) and not isIn(building, otherBuilding)
 
 def isWestOf(building, otherBuilding):
-    return otherBuilding.location.isItWest(building.location)
+    return otherBuilding.location.isItWest(building.location) and not isIn(building, otherBuilding)
 
+def isNearTo(building, otherBuilding):
+    return building.isNear(otherBuilding) and not isIn(building, otherBuilding)
+
+def isIn(building, otherBuilding):
+    if len(building.points) > 1:
+        return False # This is the case of an actual building - all dummy buildings that might be in another building are size 1
+    return building.points.issubset(otherBuilding.points)

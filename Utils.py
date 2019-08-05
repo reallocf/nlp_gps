@@ -19,3 +19,12 @@ def invertMap(regMap):
                 keySet.add(otherKey)
         invMap[key] = keySet
     return invMap
+
+def largest(key, val, existingVal): 
+    return existingVal == None or len(val) > len(existingVal)
+
+def smallest(key, val, existingVal):
+    return existingVal == None or len(val) < len(existingVal)
+
+def largestNotInBuilding(key, val, existingVal):
+    return "in" not in key and largest(key, val, existingVal)

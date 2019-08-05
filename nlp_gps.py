@@ -7,57 +7,62 @@ from Description import Description
 import MapViewer
 from Point import Point
 from Village import Village
+import Utils
 
 def main():
     buildingTable = read_in_table_data()
     columbia = Village(Constants.MAP_NAME, buildingTable)
-    # MapViewer.displayMapWithVillage(
-    #     columbia,
-    #     highlightByCondition=[
-    #         (Building.isRectangular, Constants.RED),
-    #         (Building.isDoubleSymmetricNotRectangular, Constants.YELLOW),
-    #         (Building.isOnlyLeftRightSymmetric, Constants.BLUE),
-    #         (Building.isOnlyTopBottomSymmetric, Constants.GREEN),
-    #         (Building.isNotSymmetric, Constants.PURPLE)
-    #     ]
-    # )
-    # MapViewer.displayMapWithVillage(
-    #     columbia,
-    #     highlightByCondition=[
-    #         (Building.isLongerLeftRight, Constants.RED),
-    #         (Building.isLongerTopBottom, Constants.BLUE),
-    #         (Building.isLengthSame, Constants.GREEN)
-    #     ]
-    # )
-    # MapViewer.displayMapWithVillage(
-    #     columbia,
-    #     highlightByCondition=[
-    #         (Building.noTouchingBoundingBoxPoints, Constants.PURPLE),
-    #         (Building.oneTouchingBoundingBoxPoint, Constants.YELLOW),
-    #         (Building.twoTouchingBoundingBoxPoints, Constants.RED),
-    #         (Building.threeTouchingBoundingBoxPoints, Constants.GREEN),
-    #         (Building.fourTouchingBoundingBoxPoints, Constants.BLUE)
-    #     ]
-    # )
-    # MapViewer.displayMapWithVillage(
-    #     columbia,
-    #     highlightByCondition=[
-    #         (Building.isSkinny, Constants.RED),
-    #         (Building.isNotSkinny, Constants.BLUE)
-    #     ]
-    # )
-    # MapViewer.displayMapWithVillage(
-    #     columbia,
-    #     highlightByCondition=[
-    #         (Building.isSmall, Constants.RED),
-    #         (Building.isMedium, Constants.BLUE),
-    #         (Building.isLarge, Constants.GREEN)
-    #     ]
-    # )
-    # printBuildingDescriptionsByShape(columbia)
-    # printBuildingDescriptionsByShapeAndLocation(columbia)
-    # printBuildingsNearby(columbia)
+    MapViewer.displayMapWithVillage(
+        columbia,
+        highlightByCondition=[
+            (Building.isRectangular, Constants.RED),
+            (Building.isDoubleSymmetricNotRectangular, Constants.YELLOW),
+            (Building.isOnlyLeftRightSymmetric, Constants.BLUE),
+            (Building.isOnlyTopBottomSymmetric, Constants.GREEN),
+            (Building.isNotSymmetric, Constants.PURPLE)
+        ]
+    )
+    MapViewer.displayMapWithVillage(
+        columbia,
+        highlightByCondition=[
+            (Building.isLongerLeftRight, Constants.RED),
+            (Building.isLongerTopBottom, Constants.BLUE),
+            (Building.isLengthSame, Constants.GREEN)
+        ]
+    )
+    MapViewer.displayMapWithVillage(
+        columbia,
+        highlightByCondition=[
+            (Building.noTouchingBoundingBoxPoints, Constants.PURPLE),
+            (Building.oneTouchingBoundingBoxPoint, Constants.YELLOW),
+            (Building.twoTouchingBoundingBoxPoints, Constants.RED),
+            (Building.threeTouchingBoundingBoxPoints, Constants.GREEN),
+            (Building.fourTouchingBoundingBoxPoints, Constants.BLUE)
+        ]
+    )
+    MapViewer.displayMapWithVillage(
+        columbia,
+        highlightByCondition=[
+            (Building.isSkinny, Constants.RED),
+            (Building.isNotSkinny, Constants.BLUE)
+        ]
+    )
+    MapViewer.displayMapWithVillage(
+        columbia,
+        highlightByCondition=[
+            (Building.isSmall, Constants.RED),
+            (Building.isMedium, Constants.BLUE),
+            (Building.isLarge, Constants.GREEN)
+        ]
+    )
+    printBuildingDescriptionsByShape(columbia)
+    printBuildingDescriptionsByShapeAndLocation(columbia)
+    printBuildingsNearby(columbia)
     printBuildingsByDirectionalPositions(columbia)
+    MapViewer.displayInteractiveMap(columbia)
+    MapViewer.displaySimilarPointCluster(columbia, Utils.largest)
+    MapViewer.displaySimilarPointCluster(columbia, Utils.smallest)
+    MapViewer.displaySimilarPointCluster(columbia, Utils.largestNotInBuilding)
 
 def read_in_table_data():
     with open(Constants.TABLE_NAME) as f:

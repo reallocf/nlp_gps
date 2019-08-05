@@ -51,16 +51,22 @@ class Description:
         self.descriptors.append("large")
 
     def northOf(self, elems):
-        self.descriptors.append(f'north of {self.__of__(elems)}')
+        self.descriptors.append(f'north of {self.__unpack__(elems)}')
 
     def southOf(self, elems):
-        self.descriptors.append(f'south of {self.__of__(elems)}')
+        self.descriptors.append(f'south of {self.__unpack__(elems)}')
 
     def eastOf(self, elems):
-        self.descriptors.append(f'east of {self.__of__(elems)}')
+        self.descriptors.append(f'east of {self.__unpack__(elems)}')
 
     def westOf(self, elems):
-        self.descriptors.append(f'west of {self.__of__(elems)}')
+        self.descriptors.append(f'west of {self.__unpack__(elems)}')
 
-    def __of__(self, elems):
+    def nearTo(self, elems):
+        self.descriptors.append(f'near to {self.__unpack__(elems)}')
+
+    def insideOf(self, elems):
+        self.descriptors.append(f'in {self.__unpack__(elems)}')
+
+    def __unpack__(self, elems):
         return " and ".join(str(elem) for elem in elems)

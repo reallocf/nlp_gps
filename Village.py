@@ -27,18 +27,22 @@ class Village():
     def describeBuildingsByRelativePositioning(self, relativePositionCheck):
         relativeBuildingMatrix = {}
         for building in self.buildings:
-            buildingsRelationsSet = set()
-            for otherBuilding in self.buildings:
-                if relativePositionCheck(building, otherBuilding):
-                    shouldAdd = True
+            relativeBuildingMatrix[building] = self.singleBuildingRelativePositioning(building, relativePositionCheck)
+        return relativeBuildingMatrix
+
+    def singleBuildingRelativePositioning(self, building, relativePositionCheck, runComparativeCheck=True):
+        buildingsRelationsSet = set()
+        for otherBuilding in self.buildings:
+            if relativePositionCheck(building, otherBuilding):
+                shouldAdd = True
+                if runComparativeCheck:
                     for anotherOtherBuilding in self.buildings:
                         if relativePositionCheck(building, anotherOtherBuilding) and relativePositionCheck(anotherOtherBuilding, otherBuilding):
                             shouldAdd = False
                             break
-                    if shouldAdd:
-                        buildingsRelationsSet.add(otherBuilding)
-            relativeBuildingMatrix[building] = buildingsRelationsSet
-        return relativeBuildingMatrix
+                if shouldAdd:
+                    buildingsRelationsSet.add(otherBuilding)
+        return buildingsRelationsSet
 
     def __pgmToRawData__(self, fileName):
         with open(Constants.MAP_NAME, "rb") as f:

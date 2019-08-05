@@ -10,6 +10,7 @@ GREEN = (0, 255, 0)
 RED = (0, 0, 255)
 YELLOW = (0, 255, 255)
 PURPLE = (255, 0, 255)
+TEAL = (255, 255, 0)
 
 # "close enough" in left/right vs top/bottom length to the same to be indistinguishable
 RELATIVE_LENGTH_MAGIC_NUM = 5
@@ -29,7 +30,11 @@ SMALL_MED_DIVIDE_MAGIC_NUM = 700
 MED_LARGE_DIVIDE_MAGIC_NUM = 2000
 
 # controls the angle to which one building is north/south/east/west of another
-DIRECTION_ANGLE_MAGIC_NUM = 0.25
+DIRECTION_ANGLE_MAGIC_NUM = 1
+
+# controls how far away a building can be in order for it to be considered north/south/east/west of another
+# tuned about as small as possible yet still yielding no undescribed points on the map
+DIRECTION_DIST_MAGIC_NUM = 100
 
 # scaling factor by which to multiply the bounding box to identify what is near
 NEARNESS_MAGIC_NUM = 1.5

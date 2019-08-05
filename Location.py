@@ -61,23 +61,38 @@ class Location:
     ....C....
     .........
     There are similar triangle for each other direction.
+    Also limit by distance - a building really far away from another building wouldn't be described as "north of" on
+    a busy map like ours. And this edge case can happen with circumstances even after trimming the description
+    through transitive reduction like this: (C = Center1, X = North1, D = Center2, Y = North2 . = not North of either)
+    .YYXXXXXXXY.
+    .YYYXXXXXYY.
+    ..YYXXXXXY..
+    ..YYYXXXYY..
+    ...YYXXXY...
+    ...YYYCY....
+    ....YYY.....
+    ....YYY.....
+    .....D......
+    So limiting by distance makes sense. And, unlike nearness, this distance will be constant for buildings of all size.
+    It will also be l1 norm so buildings directly north/south/east/west are counted more than buildings strongly northwest/southeast/etc.
+
     '''
     def isItNorth(self, otherLoc):
         xDiff = otherLoc.center.x - self.center.x
         yDiff = otherLoc.center.y - self.center.y
-        return (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM - xDiff < 0) and (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM + xDiff < 0)
+        return (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM - xDiff < 0) and (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM + xDiff < 0) and (yDiff > -Constants.DIRECTION_DIST_MAGIC_NUM)
 
     def isItSouth(self, otherLoc):
         xDiff = otherLoc.center.x - self.center.x
         yDiff = otherLoc.center.y - self.center.y
-        return (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM - xDiff > 0) and (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM + xDiff > 0)
+        return (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM - xDiff > 0) and (yDiff * Constants.DIRECTION_ANGLE_MAGIC_NUM + xDiff > 0) and (yDiff < Constants.DIRECTION_DIST_MAGIC_NUM)
 
     def isItEast(self, otherLoc):
         xDiff = otherLoc.center.x - self.center.x
         yDiff = otherLoc.center.y - self.center.y
-        return (yDiff - Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff < 0) and (yDiff + Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff > 0)
+        return (yDiff - Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff < 0) and (yDiff + Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff > 0) and (xDiff < Constants.DIRECTION_DIST_MAGIC_NUM)
 
     def isItWest(self, otherLoc):
         xDiff = otherLoc.center.x - self.center.x
         yDiff = otherLoc.center.y - self.center.y
-        return (yDiff - Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff > 0) and (yDiff + Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff < 0)
+        return (yDiff - Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff > 0) and (yDiff + Constants.DIRECTION_ANGLE_MAGIC_NUM * xDiff < 0) and (xDiff > -Constants.DIRECTION_DIST_MAGIC_NUM)
